@@ -1,22 +1,26 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { ListAll } from './components/list-all'
-import { NewNotebook } from './components/new-notebook'
+import { ListAll } from './pages/list-all'
+import { NewNotebook } from './pages/new'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import './main.css'
+import { Default } from './layouts/default'
 
 const router = createBrowserRouter([
   {
-    path: '/home',
-    element: <ListAll/>
-  },
-  {
-    path: '/new',
-    element: <NewNotebook/>
-  },
-  {
     path: '/',
-    element: <>root</>
-  }
+    element: <Default/>,
+    children: [
+      {
+        path: '/',
+        element: <ListAll/>
+      },
+      {
+        path: '/new',
+        element: <NewNotebook/>
+      },
+    ]
+  },
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
