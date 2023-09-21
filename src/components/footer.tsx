@@ -10,7 +10,7 @@ export function Footer(){
       <p className='flex-1 font-roboto text-zinc-700 00 text-sm hidden md:block'>Esse site utiliza Cookies 🍪</p>
 
       <p className='font-roboto text-zinc-700 text-sm'>
-        Desenvolvido por <a href='#' className='text-black transition hover:text-zinc-500'>Davi Oliveira</a>
+        Desenvolvido por <a href='/' className='text-black transition hover:text-zinc-500'>Davi Oliveira</a>
       </p>
 
       <div className='h-9 w-px mr-2 ml-2 bg-zinc-400'></div>

@@ -1,17 +1,14 @@
 import { Outlet } from 'react-router-dom'
-import { Footer } from '../components/Footer'
+import { Footer } from '../components/footer'
 import { Header } from '../components/header'
-
 
 export function Default(){
   return<>
-    <main className=''>
-        <Header/>
-        <Outlet/>
-        <div className=''>
-          <Footer/>
-        </div>
+    <Header/>
+    <main className='min-h-screen'>
+      <Outlet/>
     </main>
+    <Footer/>
       
   </>
 }

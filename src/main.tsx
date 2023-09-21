@@ -5,6 +5,7 @@ import { NewNotebook } from './pages/new'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import './main.css'
 import { Default } from './layouts/default'
+import { Edit } from './pages/edit'
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,10 @@ const router = createBrowserRouter([
         path: '/new',
         element: <NewNotebook/>
       },
+      {
+        path: '/edit/:id',
+        element: <Edit/>
+      }
     ]
   },
 ])
