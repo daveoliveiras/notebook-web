@@ -7,7 +7,7 @@ export function NewNotebook(){
   }
 
   return<>
-    <form onSubmit={Submit}>
+    <form onSubmit={Submit} className="flex-grow">
       <input type="text" placeholder="id"></input>
     </form>
   </>

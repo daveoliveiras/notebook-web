@@ -1,13 +1,19 @@
 import { Notebook } from '@/lib/notebook'
 import { ax } from '../lib/axios'
 import '../main.css'
-import { useEffect, useState } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { context } from '@/lib/context'
+import notefoto from '../assets/my.jpg'
 
 export function ListAll(){
+  const [notebooks, setNotebooks] = useState([])
+
+  console.log('hi')
+
   document.title = 'Dashboard'
 
-  const [notebooks, setNotebooks] = useState([])
+  console.log(useContext(context))
 
   useEffect(() => {
     ax.get('/notebook').then((response) => {
@@ -16,21 +22,52 @@ export function ListAll(){
     })
   },[])
 
+  const search = useContext(context)
+
+  notebooks.map((note: Notebook) => {
+    if(note.brand.name.indexOf(search[1]) != -1){
+      console.log(note.id)
+    }
+  })
+
   if(notebooks.length == 0){
-    return<>loading</>
+    return<div className='flex-grow'>
+      loading
+    </div>
   }
-  else
+  else 
   {
     return<>    
     
-    <div className='flex flex-wrap flex-grow gap-4'>
+    {/* <div className='flex flex-grow flex-wrap p-5 mb-20 justify-center gap-y-10 gap-x-20'> */}
+    <div className='grid flex-grow grid-cols-1 sm:grid-cols-4 pl-16 pr-16 pt-5 mb-20 gap-y-10 gap-x-20 justify-items-center'>
       {notebooks.map((note: Notebook) => 
-        <div key={note.id} className='bg-zinc-400 w-28 h-28 basis-52'>
-          {note.id}<br/>{note.brand.name}
-          <Link to={`edit/${note.id}`}>edit</Link>
-        </div>
+
+        <div key={note.id} className='flex shadow flex-row justify-center items-center gap-7 rounded text-zinc-800 bg-zinc-300 w-64 h-40'>
+          
+          <img src={notefoto} className='h-28 w-20 rounded'></img>
+          
+          <div className='flex flex-col text-sm font-roboto'>
+            <span >Código: {note.id}</span>
+            <span>{note.brand.name}</span>
+            <span>{note.system.name} {note.system.version}</span>
+            <span className='mb-2'>RAM {note.ram} GB</span>
+            
+            <Link to={`edit/${note.id}`}>
+              <div className='bg-zinc-400/70 pt-px pb-px pl-1 pr-1 rounded'>
+                Mais detalhes
+              </div>
+            </Link>
+          </div>
+        </div>          
+
       )}
-        <div className='bg-zinc-200 w-28 h-28'>+</div>
+
+      <Link to='/new'>
+        <div className='bg-zinc-200 rounded w-64 h-40 flex items-center justify-center pb-4 text-gray-400 text-7xl'>
+          <span>+</span>
+        </div>
+      </Link>
     </div>    
 
     </>

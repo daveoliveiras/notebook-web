@@ -4,8 +4,7 @@ import GitPng from '../assets/github.png'
 export function Footer(){
 
   return<>
-
-    <footer className='flex items-center justify-center border-t-2 h-20 pr-8 pl-8  bg-zinc-100 border-t-zinc-200'>
+    <footer className='flex items-center justify-center border-t-2 h-20 min-h-20 pr-8 pl-8  bg-zinc-100 border-t-zinc-200'>
 
       <p className='flex-1 font-roboto text-zinc-700 00 text-sm hidden md:block'>Esse site utiliza Cookies 🍪</p>
 

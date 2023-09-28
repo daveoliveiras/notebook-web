@@ -4,11 +4,10 @@ import { Header } from '../components/header'
 
 export function Default(){
   return<>
-    <Header/>
-    <main className='min-h-screen'>
+    <main className='flex h-screen flex-col'>
+      <Header/>
       <Outlet/>
-    </main>
-    <Footer/>
-      
+      <Footer/>
+    </main>      
   </>
 }
