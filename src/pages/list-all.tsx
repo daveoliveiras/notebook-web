@@ -2,9 +2,20 @@ import { Notebook } from '@/lib/notebook'
 import { ax } from '../lib/axios'
 import '../main.css'
 import { useContext, useEffect, useState } from 'react'
-import { Link, NavLink } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { context } from '@/lib/context'
 import notefoto from '../assets/my.jpg'
+import gif from '../assets/loading.gif'
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 export function ListAll(){
   const [notebooks, setNotebooks] = useState([])
@@ -31,8 +42,8 @@ export function ListAll(){
   })
 
   if(notebooks.length == 0){
-    return<div className='flex-grow'>
-      loading
+    return<div className='flex-grow flex justify-center items-center'>
+      <img src={gif} className='h-20 w-20'></img>
     </div>
   }
   else 
@@ -53,11 +64,18 @@ export function ListAll(){
             <span>{note.system.name} {note.system.version}</span>
             <span className='mb-2'>RAM {note.ram} GB</span>
             
-            <Link to={`edit/${note.id}`}>
               <div className='bg-zinc-400/70 pt-px pb-px pl-1 pr-1 rounded'>
-                Mais detalhes
+                <Dialog>
+                  <DialogTrigger>Mais detalhes</DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle><Link to={`edit/${note.id}`}>Notebook</Link></DialogTitle>
+                      {note.ssd}
+                    </DialogHeader>
+                  </DialogContent>
+                </Dialog>
               </div>
-            </Link>
+            
           </div>
         </div>          
 
@@ -69,7 +87,6 @@ export function ListAll(){
         </div>
       </Link>
     </div>    
-
     </>
   }  
 }

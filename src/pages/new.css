@@ -1,0 +1,9 @@
+.field {
+  border-bottom: 1.5px solid grey;
+  outline: none;
+  transition: .5s;
+}
+
+.field:focus {
+  border-color: #007AFF;
+}
