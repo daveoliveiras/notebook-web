@@ -6,4 +6,5 @@ export type Notebook = {
   ram: number
   hd: number | null
   ssd: number | null
+  photos: [{path: string}]
 }
