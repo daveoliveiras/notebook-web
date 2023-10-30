@@ -1,11 +1,11 @@
-import './new.css'
 import { Button } from '@/components/ui/button'
 import { ChangeEvent, FormEvent, MouseEvent, useContext, useRef, useState } from 'react'
-import { ax } from '../lib/axios'
-import { photos, changePhotos } from '@/lib/preview'
-import { foto, changeFotos } from '@/lib/files'
+import { api } from '../lib/axios'
+import { notebooks } from '@/contexts/notebooks'
 
-export function NewNotebook(){
+export function InsertForm(){
+  document.title = 'Cadastrar'
+  
   const idRef = useRef<HTMLInputElement>(null)
   const brandRef = useRef<HTMLInputElement>(null)
   const modelRef = useRef<HTMLInputElement>(null)
@@ -21,125 +21,109 @@ export function NewNotebook(){
   const touchRef = useRef<HTMLInputElement>(null)
   const noteRef = useRef<HTMLTextAreaElement>(null)
 
-  document.title = 'Cadastrar'
+  const [status, setStatus] = useState<string>('Salvar')
+  const [previewIndex, setPriviewIndex] = useState(0)
+  const [URls, setURLs] = useState<string[]>([])
+  const [photoFiles, setPhotoFiles] = useState<File[]>([])
+  const [exists, setExists] = useState(false)
 
-  const [preview, setPreview] = useState<string | null>(null)
-  const photoURL = useContext(photos)
-  const hate = useContext(foto)
-
-  const blob: string[] = []
-  const images: File[] = []
-
-
-  function submit(event: FormEvent<HTMLFormElement>){
+  async function submit(event: FormEvent<HTMLFormElement>){
     event.preventDefault()
 
     const data = new FormData()
     let paths: string[] = []
 
-    // changeFotos([])
-
+    //usar 'classe notebook' aqui
     const obj = {
-      // id: idRef.current?.value ? parseInt(idRef.current?.value) : '',
-      // ram: ramRef.current?.value ? parseInt(ramRef.current?.value) : '',
-      // ddr: ddrRef.current?.value ? parseInt(ddrRef.current?.value) : '',
-      // hd: hddRef.current?.value ? parseInt(hddRef.current?.value) : '',
-      // // ssd: ssdRef.current?.value ? parseInt(ssdRef.current?.value) : '',
-      // // graphics_card: '',
-      // model: 'ss',
-      // note: noteRef.current?.value ? parseInt(noteRef.current?.value) : '',
-      // resolution: resolutionRef.current?.value ? parseInt(resolutionRef.current?.value) : '',
-      // inch: 2,
-      // touch: true,
-      // clock: clockRef.current?.value ? parseInt(clockRef.current?.value) : '',
-      // processor_brand: processorBrandRef.current?.value ? parseInt(processorBrandRef.current?.value) : '',
-      // processor_model: 'a',
-      // system: {
-      //   name: 'fdfdfdf',
-      //   version: 11
-      // },
-      // brand:{
-      //   name: 'dfdfdf'
-      // },
-      // photos: ['f']
-      
-        id: idRef.current?.value ? parseInt(idRef.current?.value) : '',
-        ram: 12,
-        ddr: 4,
-        hd: 256,
-        model: 'Aspire 3',
-        note: 'Muito ruim.',
-        resolution: '1300x760@60Hz',
-        inch: null,
-        processor_model: 'i3-8130U',
-        processor_brand: 'Intel',
-        clock: 2.2,
-        touch: true,
-        system: { name: 'Windows', version: 11 },
-        brand: { name: 'Dell' },
-        photos: []      
+
+      id: idRef.current?.value ? parseInt(idRef.current.value) : '',
+      brand: {
+        name: brandRef.current?.value ? brandRef.current.value : '',
+      },
+      model: modelRef.current?.value ? modelRef.current.value : '',
+      system: { 
+        name: systemRef.current?.value ? systemRef.current?.value : '',
+      },
+      system_version: '11 Pro', 
+      processor_brand: processorBrandRef.current?.value ? processorBrandRef .current.value : '',
+      processor_model: processorModelRef.current?.value ? processorModelRef .current.value : '',
+      clock: clockRef.current?.value ? parseFloat(clockRef.current.value) : '',
+      hd: hddRef.current?.value ? parseInt(hddRef.current.value) : '',
+      ssd: ssdRef.current?.value ? parseInt(ssdRef.current.value) : null,
+      ram: ramRef.current?.value ? parseInt(ramRef.current.value) : '',
+      ddr: ddrRef.current?.value ? parseInt(ddrRef.current.value) : '',        
+      video: 'NVIDIA',
+      resolution: resolutionRef.current?.value ? resolutionRef .current.value : '',
+      inch: null,        
+      touch: touchRef.current?.checked ? touchRef.current.checked : false,        
+      note: noteRef.current?.value ? noteRef.current.value : '',
+      photos: [''],
     }
 
-    console.log(obj)
+    setStatus('Salvando...')
 
-    hate.forEach((photo) => {
-      data.append('photo', photo)
+    photoFiles.forEach((item) => {
+      data.append('photo', item)
     })
 
-    ax.post('/upload', data, {
+    await api.post('/upload-images', data, {
       headers:{'Content-type': 'multipart/formd-data'}
       }).then(async (response) => {
-        paths = await response.data
-        console.log(response.data)
-
-        obj.photos = paths
-
-        ax.post('/notebook', obj).then((response) => {
-          console.log(response)
-        }).catch(function (e){
-          console.log(e)
-        })
+        paths = response.data
+        obj.photos = paths 
+    }).catch(function (e){
+      console.log(e)
     })
 
-    // ax.post('/notebook', obj).then((response) => {
-    //   console.log(response)
-    // }).catch(function (e){
-    //   console.log(e)
-    // })
+    //VALIDAR ISSO AQUI SE NAO O NOTE PODE IR PRO BANCO SEM AS FOTOS (OU AS FOTOS SEM NOTEBOOKS)
+
+    api.post('/notebook', obj).then((response) => {
+      setStatus('Sucesso!')
+      console.log(response)
+    }).catch(function (e){
+      console.log(e)
+    })
   }
 
   function uploadPhotos(event: ChangeEvent<HTMLInputElement>){
     const { files } = event.target
-    if(files){
+    const filesFromInput = files
+    const getURLs: string[] = []
+    const getPhotoFiles: File[] = []
 
-      Array.from(files).forEach((photo) => {
-        const preview = URL.createObjectURL(photo)
-        console.log(preview)
-        blob.push(preview)
-        images.push(photo)
+    if(filesFromInput){
+      Array.from(filesFromInput).forEach((item) => {
+        const preview = URL.createObjectURL(item)
+        getURLs.push(preview)
+        getPhotoFiles.push(item)
       })
 
-      changePhotos(blob)
-      changeFotos(images)
-
-      setPreview(blob[0])
-      // console.log(blob)
-      console.log(photoURL)
-      
+      setURLs(getURLs)
+      setPhotoFiles(getPhotoFiles)
     }
   }
 
   function next(event: MouseEvent<HTMLButtonElement>){
     event.preventDefault()
-    console.log('apertou')
-    setPreview(photoURL[2])
+    if(previewIndex + 1 >= URls.length){
+      setPriviewIndex(0)
+    }
+    else{
+      setPriviewIndex(previewIndex + 1)
+    }
+
   }
 
   function back(event: MouseEvent<HTMLButtonElement>){
     event.preventDefault()
-    console.log('apertou')
-    setPreview(photoURL[1])
+    if(previewIndex - 1 < 0){
+      setPriviewIndex(URls.length - 1)
+    }
+    else{
+      setPriviewIndex(previewIndex - 1)
+    }
   }
+  const list = useContext(notebooks)
 
   return<>
     <form onSubmit={submit} className="flex-grow flex justify-center gap-32">
@@ -149,8 +133,16 @@ export function NewNotebook(){
         <span className='text-zinc-300 italic mt-8'>Detalhes gerais</span>
         <div className='h-px w-full bg-zinc-300'></div>
 
-        <label htmlFor='id'>Código</label>
-        <input name='id' id='id' type="number" min={1} placeholder="id" className='field' ref={idRef}></input>
+        <label htmlFor='id'>Código {exists ? 'já existe' : 'ok'}</label>
+        <input name='id' id='id' type="number" min={1} placeholder="id" className='field ' ref={idRef}
+        onChange={(event) => {
+          setExists(false)
+          list.map((item) => {
+            if(item.id == parseInt(event.target.value)){
+              setExists(true)
+            }
+          })
+        }}></input>
 
         <label htmlFor='brand'>Marca</label>
         <input name='brand' id='brand' type="text" placeholder="Dell" className='field' ref={brandRef}></input>
@@ -172,7 +164,7 @@ export function NewNotebook(){
 
         <label htmlFor='clock'>Frequência</label> 
         <div>             
-          <input name='clock' id='clock' type="number" placeholder="2.2" className='field w-14' ref={clockRef}></input>
+          <input name='clock' id='clock' type="number" placeholder="2.2" step={0.1} className='field w-14' ref={clockRef}></input>
           <span className='ml-2'>GHz</span>
         </div>
       </div>
@@ -233,16 +225,16 @@ export function NewNotebook(){
       <div className='flex flex-col justify-center items-center gap-20'>
         <label htmlFor="photos">
           <div className='flex justify-center items-center border border-dashed rounded-sm border-zinc-400 text-zinc-400 h-48 w-72 cursor-pointer'>
-            {preview ? (<>
+            {URls.length ? (<>
             <button onClick={back}>-</button>
-            <img src={preview}></img>
+            <img src={URls[previewIndex]}></img>
             <button onClick={next}>+</button>
             </>
             ) : <span>Selecione as fotos</span>}
           </div>
         </label>
       
-        <Button type='submit' className='bg-green-700 w-40 h-8'>Salvar</Button>
+        <Button type='submit' className='bg-green-700 w-40 h-8'>{status}</Button>
         </div>
     </form>
   </>

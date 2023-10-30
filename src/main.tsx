@@ -1,31 +1,37 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { ListAll } from './pages/list-all'
-import { NewNotebook } from './pages/new'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { Dashboard } from './pages/dashboard'
+import { InsertPage } from './pages/insert'
+import { createBrowserRouter, Route, RouterProvider, Navigate } from 'react-router-dom'
 import './main.css'
 import { Default } from './layouts/default'
-import { Edit } from './pages/edit'
+import { EditPage } from './pages/edit'
+import { LoginPage } from './pages/login'
+import Cookies from 'universal-cookie'
 
 const router = createBrowserRouter([
-{
+  {
     path: '/',
     element: <Default/>,
+    errorElement: <LoginPage/>,
     children: [
       {
         path: '/',
-        element: <ListAll/>
+        element: <Dashboard/>,
       },
       {
         path: '/new',
-        element: <NewNotebook/>
+        element: <InsertPage/>
       },
       {
         path: '/edit/:id',
-        element: <Edit/>
+        element: <EditPage/>
       }
     ]
   },
+  {
+    path: '/login',
+    element: <LoginPage/>
+  }
 ])
 
 ReactDOM.createRoot(document.getElementById('root')!).render(

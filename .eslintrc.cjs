@@ -16,6 +16,7 @@ module.exports = {
     ],
     "quotes": ["error", "single"],
     "semi": ["error", "never"],
+    "no-multiple-empty-lines": ["error", { "max": 1 }],
     "@typescript-eslint/no-unused-vars": "off"
   },
 }

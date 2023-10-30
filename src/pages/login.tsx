@@ -1,29 +1,33 @@
-import { Button } from '@/components/ui/button'
 import { auth, provider, signInWithPopup } from '../firebase/config'
-import { MouseEvent } from 'react'
+import { MouseEvent, useState } from 'react'
 import { GoogleAuthProvider } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
-import { ax } from '@/lib/axios'
+import { api } from '@/lib/axios'
 import Cookies from 'universal-cookie'
 import google from '../assets/google.png'
 import mail from '../assets/mail.png'
-import '../pages/new.css'
+import '../style.css'
+import { Loader2 } from 'lucide-react'
 
-export function Login(){
+export function LoginPage(){
+
+  const [accessing, setAccessing] = useState(false)
+
   const url = useNavigate() 
 
   function handleClick(event: MouseEvent<HTMLAnchorElement>){
+    setAccessing(true)
     signInWithPopup(auth, provider).then((data) => {
       const credential = GoogleAuthProvider.credentialFromResult(data)
       console.log(credential)
+      event.preventDefault()
       
-      ax.post('/auth', data).then((response) => {
+      api.post('/auth', data).then((response) => {
         const cookies = new Cookies()
         const secs = 60 * 60 * 24 * 30
         cookies.set('token', response.data, {path: '/', maxAge: secs})
-        ax.defaults.headers.common = {'Authorization': `bearer ${cookies.get('token')}`}
+        api.defaults.headers.common = {'Authorization': `bearer ${cookies.get('token')}`}
         url('/')
-        console.log(response)
       })
 
     }).catch((e) => {
@@ -63,7 +67,7 @@ export function Login(){
 
       <a className='cursor-pointer bg-gray-200 p-2 rounded-sm w-60' onClick={handleClick}>
         <div className='flex items-center gap-3 font-roboto'>
-          <img src={google} className='w-4 h-4 m-1'></img>
+          {accessing ? <Loader2 className='w-4 h-4 animate-spin'></Loader2> : <img src={google} className='w-4 h-4 m-1'></img>}
           Acessar com o google
         </div>
       </a>

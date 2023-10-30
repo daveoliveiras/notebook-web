@@ -1,26 +1,35 @@
-import { NavLink, useLocation } from 'react-router-dom'
-import { useState, useContext, ChangeEvent } from 'react'
-import HomePng from '../assets/home-2502.png'
-import PlusPng from '../assets/plus2.png'
+import { NavLink, useLocation, useNavigate } from 'react-router-dom'
+import { useState, useContext, ChangeEvent, MouseEvent, MouseEventHandler } from 'react'
+import HomePng from '../assets/home.png'
+import PlusPng from '../assets/plus.png'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, 
   DropdownMenuTrigger } from './ui/dropdown-menu'
-import UserPng from '../assets/user.png'
 import LeavePng from '../assets/leave.png'
 import { ArrowsDownUp } from 'phosphor-react'
-import { context, changeContext } from '@/lib/context'
+import Cookies from 'universal-cookie'
+import decode from 'jwt-decode'
 
+type User = {
+  name: string,
+  photo: string
+}
 
 export function Header(){
 
   const [filter, setFilter] = useState('Filtros')
-  const [Search, setSearch] = useState('')
 
-  const a = useContext(context)
+  const url = useNavigate()
+
+  const cookie = new Cookies()
+  const token = cookie.get('token')
+  const user: User = decode(token)
 
   function handleFilterSearch(event: ChangeEvent<HTMLInputElement>){
-    changeContext([filter, event.target.value])
-    setSearch(a[1])
-    console.log(a)
+  }
+
+  function handleLogout(event: MouseEvent<HTMLInputElement>){
+    cookie.remove('token')
+    url('/login')
   }
 
   return<header className='flex pl-8 pr-8 items-center bg-zinc-100 min-h-16 h-16'>
@@ -58,10 +67,10 @@ export function Header(){
     </div>
 
     <div className='flex flex-auto content-end justify-end'>
-      <img src={UserPng} className='h-4 w-4 mt-1 mr-1'/>
-      <span className='mr-8'>Davi</span>
+      <img src={user.photo} className='h-6 w-6 mt-1 mr-1 rounded-full'/>
+      <span className='mr-8'>{user.name}</span>
       <img src={LeavePng} className='h-4 w-4 mt-1 mr-1'/>
-      <span>Sair</span>
+      <input type='button' value={'sair'} onClick={handleLogout} className='cursor-pointer'/>
     </div>
   </header>
 }
