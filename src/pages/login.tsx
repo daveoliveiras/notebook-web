@@ -1,4 +1,4 @@
-import { auth, provider, signInWithPopup } from '../firebase/config'
+import { auth, signInWithPopup } from '../firebase/config'
 import { MouseEvent, useState } from 'react'
 import { GoogleAuthProvider } from 'firebase/auth'
 import { useNavigate } from 'react-router-dom'
@@ -14,12 +14,16 @@ export function LoginPage(){
   const [accessing, setAccessing] = useState(false)
 
   const url = useNavigate() 
-
+    
   function handleClick(event: MouseEvent<HTMLAnchorElement>){
     setAccessing(true)
-    signInWithPopup(auth, provider).then((data) => {
+    const provide = new GoogleAuthProvider()
+    provide.setCustomParameters({
+      prompt: 'select_account'
+    })
+    signInWithPopup(auth, provide).then((data) => {
       const credential = GoogleAuthProvider.credentialFromResult(data)
-      console.log(credential)
+      console.log(data)
       event.preventDefault()
       
       api.post('/auth', data).then((response) => {

@@ -1,18 +1,17 @@
 import ReactDOM from 'react-dom/client'
 import { Dashboard } from './pages/dashboard'
 import { InsertPage } from './pages/insert'
-import { createBrowserRouter, Route, RouterProvider, Navigate } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import './main.css'
 import { Default } from './layouts/default'
 import { EditPage } from './pages/edit'
 import { LoginPage } from './pages/login'
-import Cookies from 'universal-cookie'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Default/>,
-    errorElement: <LoginPage/>,
+    errorElement: <p>erro</p>,
     children: [
       {
         path: '/',
@@ -31,6 +30,10 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <LoginPage/>
+  },
+  {
+    path: '*',
+    element:  <Navigate to='/'/>
   }
 ])
 

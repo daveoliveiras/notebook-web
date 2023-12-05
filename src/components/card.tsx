@@ -1,4 +1,4 @@
-import { MouseEvent, useState } from 'react'
+import { MouseEvent, useContext, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Notebook } from '@/types/notebook'
 import { DeleteModal } from './DeleteModal'
@@ -41,7 +41,7 @@ export function Card(props: cardProps){
     <div className='flex flex-col text-sm font-roboto gap-1'>
       <span className='font-bold'>Código {props.note.id}</span>
       <span>{props.note.brand.name}</span>
-      <span>RAM {props.note.ram} GB</span>
+      <span>{props.note.model}</span>
       <span>{props.note.system.name} {props.note.system_version}</span>
       
       <div className='bg-zinc-400/70 rounded flex justify-center'>
